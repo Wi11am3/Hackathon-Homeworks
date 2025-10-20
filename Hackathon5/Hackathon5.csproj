@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>disable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Numerology.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Linq.AsyncEnumerable" Version="10.0.0-rc.2.25502.107" />
+  </ItemGroup>
+
+</Project>
