@@ -33,6 +33,7 @@
             label2 = new Label();
             label3 = new Label();
             dateTimePicker1 = new DateTimePicker();
+            label4 = new Label();
             SuspendLayout();
             // 
             // label1
@@ -68,9 +69,8 @@
             label3.AutoSize = true;
             label3.Location = new Point(327, 125);
             label3.Name = "label3";
-            label3.Size = new Size(42, 15);
+            label3.Size = new Size(0, 15);
             label3.TabIndex = 4;
-            label3.Text = "label3";
             // 
             // dateTimePicker1
             // 
@@ -79,11 +79,20 @@
             dateTimePicker1.Size = new Size(200, 23);
             dateTimePicker1.TabIndex = 5;
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(328, 156);
+            label4.Name = "label4";
+            label4.Size = new Size(0, 15);
+            label4.TabIndex = 6;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(label4);
             Controls.Add(dateTimePicker1);
             Controls.Add(label3);
             Controls.Add(label2);
@@ -102,5 +111,6 @@
         private Label label2;
         private Label label3;
         private DateTimePicker dateTimePicker1;
+        private Label label4;
     }
 }

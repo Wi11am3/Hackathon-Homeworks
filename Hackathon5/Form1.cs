@@ -1,99 +1,112 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
+using System.Reflection.Emit;
+using System.Windows.Forms;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hackathon5
 {
-
     public partial class Form1 : Form
     {
-        private int[] answer;
         public Form1()
         {
             InitializeComponent();
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
             DateTime selectDate = dateTimePicker1.Value;
-
-            int year = selectDate.Year;
+            string yearmonthday = selectDate.ToString("yyyyMMdd");
             int month = selectDate.Month;
             int day = selectDate.Day;
 
-            string stryear = year.ToString();
-            string strmonth = month.ToString();
-            string strday = day.ToString();
-            string yearmonthday = stryear + strmonth + strday;
-
-            MessageBox.Show(yearmonthday);
-
-            //int[] answer = yearmonthday.Split(string.Empty).Select(int.Parse).ToArray();
-
+            //計算生命靈數
             int[] answer = (from c in yearmonthday
-                            select int.Parse(ToString())).ToArray();
+                            select int.Parse(c.ToString())).ToArray();
 
-            int sum = (from x in answer
-                      select x).Sum();
+            int lifeNumber = (from x in answer
+                              select x).Sum();
 
-            MessageBox.Show($"{ sum}");
+            while (lifeNumber >= 10)//確保生命靈數計算不能大於10
+            {
+                int[] digits = (from c in lifeNumber.ToString()
+                                select int.Parse(c.ToString())).ToArray();
+                lifeNumber = (from x in digits select x).Sum();
+            }
 
-            //int a = 0;
-            //for (int i = 0; i < answer.Length; i++)
-            //{
-            //    a += answer[i];
-            //}
-            //MessageBox.Show($"{a}");
+            string searchKeyword = $"生命靈數{lifeNumber}";
+
+            //尋找星座
+            string theZodiac = "aaaaaaa";//迴圈外宣告變數，才能在迴圈後使用
+            bool foundZodiac = false;
 
             List<ZodiacSignData> list = ZodiacSignList();
             foreach (var zodiac in list)
             {
                 if ((month == zodiac.StartMonth && day >= zodiac.StartDay) || (month == zodiac.EndMonth && day <= zodiac.EndDay))
                 {
-                    MessageBox.Show($"{zodiac.ZodiacSign}");
+                    theZodiac = zodiac.ZodiacSign;
+                    foundZodiac = true;
+                    label3.Text = $"你的星座是{theZodiac}";
                 }
             }
+            if (foundZodiac)
+            {
+                string fileName = "生命靈數.txt";
+                if (File.Exists(fileName))
+                {
+                    var lines = File.ReadAllLines(fileName);
 
-            //string fileName = "生命靈數.txt";
-            //if (File.Exists(fileName))
-            //{
-            //    var lines = File.ReadAllLines(fileName);
+                    bool inTargetZodiac = false;
+                    bool foundComment = false;
 
-                //先找到星座區塊,要如何區隔不同星座
-                //找到生命靈數,再找評語
-                //如何區分生命靈數與平語,Split 分隔
-
-
-
-                //var result = lines.Where(line => line.Contains());
-                //MessageBox.Show(Plus(answer.Length));
-            //}
+                    foreach (var line in lines)
+                    {
+                        if (line.Contains("【") && line.Contains(theZodiac))
+                        {
+                            inTargetZodiac = true;
+                            continue;
+                        }
+                        if (inTargetZodiac && line.Contains(searchKeyword))
+                        {
+                            string trimmedLine = line.Trim();
+                            string comment = trimmedLine.Split('：').Last();
+                            label4.Text = $"你的生命靈數{lifeNumber}：{comment}";
+                            foundComment = true;
+                            break;
+                        }
+                    }
+                    if (!foundComment)
+                    {
+                        label4.Text = "找不到對應的生命靈數評語";
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("找不到生命靈數.txt檔案");
+                }
+            }
+            else
+            {
+                MessageBox.Show("無法判斷您的星座");
+            }
         }
-        //private int Plus(int n)
-        //{
-        //    if (answer.Length == 1)
-        //        return 1;
-        //    else
-        //        return answer[answer.Length] + Plus(answer[answer.Length - 1]);
-        //}
-
-
         static List<ZodiacSignData> ZodiacSignList()
         {
             return new List<ZodiacSignData>()
             {
-                new ZodiacSignData { ZodiacSign ="Aries" , StartMonth=3 , StartDay=21 , EndMonth=4 , EndDay=19},
-                new ZodiacSignData { ZodiacSign ="Taurus" , StartMonth=4 , StartDay=20 , EndMonth=5 , EndDay=20},
-                new ZodiacSignData { ZodiacSign ="Gemini" , StartMonth=5 , StartDay=21 , EndMonth=6 , EndDay=20},
-                new ZodiacSignData { ZodiacSign ="Cancer" , StartMonth=6 , StartDay=21 ,EndMonth=7 , EndDay=22},
-                new ZodiacSignData { ZodiacSign ="Leo" , StartMonth=7 , StartDay=23 , EndMonth=8 , EndDay=22},
-                new ZodiacSignData { ZodiacSign ="Virgo" , StartMonth=8 , StartDay=23 , EndMonth=9 , EndDay=22},
-                new ZodiacSignData { ZodiacSign ="Libra" , StartMonth=9 , StartDay=23 , EndMonth=10 , EndDay=22},
-                new ZodiacSignData { ZodiacSign ="Scorpio" , StartMonth=10 , StartDay=23,EndMonth=11 , EndDay=21},
-                new ZodiacSignData { ZodiacSign ="Sagittarius" , StartMonth=11 , StartDay=22 , EndMonth=12 , EndDay=21},
-                new ZodiacSignData { ZodiacSign ="Capricorn" , StartMonth=12 , StartDay=22, EndMonth=1 , EndDay=19},
-                new ZodiacSignData { ZodiacSign ="Aquarius" , StartMonth=1 , StartDay=20 , EndMonth=2 ,EndDay=18},
-                new ZodiacSignData { ZodiacSign ="Pisces" , StartMonth=2 , StartDay=19 , EndMonth=3 ,EndDay=20}
+                new ZodiacSignData { ZodiacSign ="Aries牡羊座" ,       StartMonth=3 ,  StartDay=21 , EndMonth=4 ,  EndDay=19},
+                new ZodiacSignData { ZodiacSign ="Taurus金牛座" ,      StartMonth=4 ,  StartDay=20 , EndMonth=5 ,  EndDay=20},
+                new ZodiacSignData { ZodiacSign ="Gemini雙子座" ,      StartMonth=5 ,  StartDay=21 , EndMonth=6 ,  EndDay=20},
+                new ZodiacSignData { ZodiacSign ="Cancer巨蟹座" ,      StartMonth=6 ,  StartDay=21 , EndMonth=7 ,  EndDay=22},
+                new ZodiacSignData { ZodiacSign ="Leo獅子座" ,         StartMonth=7 ,  StartDay=23 , EndMonth=8 ,  EndDay=22},
+                new ZodiacSignData { ZodiacSign ="Virgo處女座" ,       StartMonth=8 ,  StartDay=23 , EndMonth=9 ,  EndDay=22},
+                new ZodiacSignData { ZodiacSign ="Libra天秤座" ,       StartMonth=9 ,  StartDay=23 , EndMonth=10 , EndDay=22},
+                new ZodiacSignData { ZodiacSign ="Scorpio天蠍座" ,     StartMonth=10 , StartDay=23 , EndMonth=11 , EndDay=21},
+                new ZodiacSignData { ZodiacSign ="Sagittarius射手座" , StartMonth=11 , StartDay=22 , EndMonth=12 , EndDay=21},
+                new ZodiacSignData { ZodiacSign ="Capricorn摩羯座" ,   StartMonth=12 , StartDay=22 , EndMonth=1 ,  EndDay=19},
+                new ZodiacSignData { ZodiacSign ="Aquarius水瓶座" ,    StartMonth=1 ,  StartDay=20 , EndMonth=2 ,  EndDay=18},
+                new ZodiacSignData { ZodiacSign ="Pisces雙魚座" ,      StartMonth=2 ,  StartDay=19 , EndMonth=3 ,  EndDay=20}
             };
         }
     }
